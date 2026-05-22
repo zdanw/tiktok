@@ -1,5 +1,5 @@
 [tool.vercel]
-entrypoint = "api:app"
+entrypoint = "backend.api:app"
 
 [project]
 name = "tiktok-video-publishing"
