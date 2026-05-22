@@ -3,9 +3,21 @@
     {
       "src": "frontend/web_admin.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "frontend/*.png",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/IMG_202605224452_1024x1024.png",
+      "dest": "/frontend/IMG_202605224452_1024x1024.png"
+    },
+    {
+      "src": "/",
+      "dest": "/frontend/web_admin.html"
+    },
     {
       "src": "/(.*)",
       "dest": "/frontend/web_admin.html"
