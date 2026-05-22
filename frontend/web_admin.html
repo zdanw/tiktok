@@ -365,7 +365,6 @@
 
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', `${API_BASE}/upload`);
-                xhr.setRequestHeader('X-API-Key', API_KEY);
 
                 xhr.upload.onprogress = (e) => {
                     if (e.lengthComputable) {
@@ -452,7 +451,6 @@
 
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', `${API_BASE}/publish`);
-                xhr.setRequestHeader('X-API-Key', API_KEY);
                 xhr.timeout = 60000;
 
                 xhr.upload.onprogress = (e) => {
