@@ -41,3 +41,9 @@ Thumbs.db
 # Node.js (if any)
 node_modules/
 package-lock.json
+
+# Video uploads
+videos/
+
+# Upload history
+upload_history.json

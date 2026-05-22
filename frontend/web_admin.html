@@ -123,8 +123,8 @@
         
         <!-- 登录卡片 - 仅在未授权时显示 -->
         <div class="card" id="loginCard">
-            <h2><span class="icon">🔐</span> 登录 TikTok</h2>
-            <p style="color: #666; margin-bottom: 20px;">请使用您的 TikTok 账号登录以使用视频发布功能</p>
+            <h2><span class="icon">🔐</span> Login with TikTok</h2>
+            <p style="color: #666; margin-bottom: 20px;">Please log in with your TikTok account to use the video publishing feature</p>
             <button class="btn-tiktok" onclick="loginWithTikTok()">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v14.77a2.86 2.86 0 0 1-5.14 1.9 2.85 2.85 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .84.13V11.4a6.32 6.32 0 0 0-.84-.06 6.36 6.36 0 0 0 0 12.72 6.36 6.36 0 0 0 6.36-6.36v-7a7.45 7.45 0 0 0 4.19 1.34V9.4a4.85 4.85 0 0 1-3.5-2.71z"/>
@@ -136,46 +136,46 @@
         
         <!-- 状态卡片 -->
         <div class="card" id="statusCard">
-            <h2><span class="icon">📊</span> 系统状态</h2>
+            <h2><span class="icon">📊</span> System Status</h2>
             <div class="status">
                 <div class="status-item">
-                    <label>授权状态</label>
-                    <div class="value" id="authStatus">检查中...</div>
+                    <label>Authorization</label>
+                    <div class="value" id="authStatus">Checking...</div>
                 </div>
                 <div class="status-item">
-                    <label>Token过期时间</label>
+                    <label>Token Expiry</label>
                     <div class="value" id="tokenExpiry">-</div>
                 </div>
                 <div class="status-item">
-                    <label>待处理上传</label>
+                    <label>Pending Uploads</label>
                     <div class="value" id="pendingCount">-</div>
                 </div>
             </div>
             <div class="btn-group">
-                <button class="btn btn-secondary" onclick="checkStatus()">🔄 刷新状态</button>
+                <button class="btn btn-secondary" onclick="checkStatus()">🔄 Refresh Status</button>
             </div>
             <div id="statusAlert" class="alert"></div>
         </div>
         
         <!-- 发布选项卡片 -->
         <div class="card">
-            <h2><span class="icon">📤</span> 发布视频</h2>
+            <h2><span class="icon">📤</span> Publish Video</h2>
             <div class="form-group">
-                <label>选择视频文件</label>
+                <label>Select Video File</label>
                 <input type="file" id="videoFile" accept="video/mp4,video/*">
             </div>
             <div class="form-group">
-                <label>视频标题（可选）</label>
-                <input type="text" id="videoTitle" placeholder="输入视频标题">
+                <label>Video Title (Optional)</label>
+                <input type="text" id="videoTitle" placeholder="Enter video title">
             </div>
             <div class="form-group">
-                <label>视频描述（可选）</label>
-                <input type="text" id="videoDesc" placeholder="输入视频描述">
+                <label>Video Description (Optional)</label>
+                <input type="text" id="videoDesc" placeholder="Enter video description">
             </div>
             <div class="form-group">
-                <label>隐私级别</label>
+                <label>Privacy Level</label>
                 <select id="privacyLevel" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1em;">
-                    <option value="" disabled selected>Please authorize to see available options</option>
+                    <option value="" disabled selected>Please authorize to see options</option>
                     <option value="SELF_ONLY">Self Only (Default)</option>
                     <option value="PRIVATE">Private</option>
                     <option value="MUTUAL_FOLLOW_FRIENDS">Mutual Follow Friends</option>
@@ -184,27 +184,29 @@
                 </select>
             </div>
             <div class="btn-group">
-                <button class="btn btn-success" onclick="uploadVideo()" id="uploadBtn">📥 上传到收件箱</button>
-                <button class="btn btn-primary" onclick="publishVideo()" id="publishBtn">🚀 直接发布</button>
+                <button class="btn btn-success" onclick="uploadVideo()" id="uploadBtn">📥 Upload to Inbox</button>
+                <button class="btn btn-primary" onclick="publishVideo()" id="publishBtn">🚀 Direct Publish</button>
             </div>
             <div class="progress" id="uploadProgress">
                 <div class="progress-bar" id="progressBar">0%</div>
             </div>
-           
+            <div id="uploadAlert" class="alert"></div>
+            <p class="info-text">💡 Recommended: Use "Direct Publish" to avoid draft limits</p>
         </div>
         
         <!-- 历史记录卡片 -->
         <div class="card">
-            <h2><span class="icon">📜</span> 上传历史</h2>
-            <button class="btn btn-secondary" onclick="loadHistory()">🔄 刷新历史</button>
+            <h2><span class="icon">📜</span> Upload History</h2>
+            <button class="btn btn-secondary" onclick="loadHistory()">🔄 Refresh History</button>
             <div class="history-list" id="historyList" style="margin-top: 15px;">
-                <p style="color: #666; text-align: center; padding: 20px;">暂无上传记录</p>
+                <p style="color: #666; text-align: center; padding: 20px;">No upload records</p>
             </div>
         </div>
     </div>
 
     <script>
-        const API_BASE = window.location.origin + '/tiktok';
+        // 配置后端 API 地址 - 在部署时修改为您的 Railway 后端地址
+        const API_BASE = 'https://your-railway-backend.up.railway.app/tiktok';
         const API_KEY = 'bebcare_internal_key_2026';
         let isUploading = false;
 
@@ -217,23 +219,22 @@
 
         async function loginWithTikTok() {
             try {
-                showAlert('login', 'info', '正在获取授权链接...');
+                showAlert('login', 'info', 'Getting authorization URL...');
                 const response = await fetch(`${API_BASE}/auth/url`, { headers: getHeaders() });
                 const data = await response.json();
                 
                 if (data.auth_url) {
-                    // 在当前窗口打开授权页面，或者新窗口
                     window.location.href = data.auth_url;
                 } else {
-                    showAlert('login', 'error', '获取授权链接失败');
+                    showAlert('login', 'error', 'Failed to get authorization URL');
                 }
             } catch (error) {
-                showAlert('login', 'error', '登录失败: ' + error.message);
+                showAlert('login', 'error', 'Login failed: ' + error.message);
             }
         }
 
         async function logout() {
-            if (!confirm('确定要退出登录吗？')) {
+            if (!confirm('Are you sure you want to logout?')) {
                 return;
             }
             
@@ -245,13 +246,13 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showAlert('status', 'success', '退出登录成功');
+                    showAlert('status', 'success', 'Logout successful');
                     checkStatus();
                 } else {
-                    showAlert('status', 'error', '退出登录失败: ' + (data.error || '未知错误'));
+                    showAlert('status', 'error', 'Logout failed: ' + (data.error || 'Unknown error'));
                 }
             } catch (error) {
-                showAlert('status', 'error', '退出登录失败: ' + error.message);
+                showAlert('status', 'error', 'Logout failed: ' + error.message);
             }
         }
 
@@ -267,16 +268,16 @@
                 const userDisplay = document.getElementById('userDisplay');
                 
                 if (data.status === 'valid') {
-                    authStatus.textContent = '✅ 已授权';
+                    authStatus.textContent = '✅ Authorized';
                     authStatus.className = 'value success';
                     tokenExpiry.textContent = data.expires_at ? new Date(data.expires_at).toLocaleString('zh-CN') : '-';
                     loginCard.style.display = 'none';
                     userInfo.style.display = 'flex';
-                    userDisplay.textContent = '已登录 TikTok';
+                    userDisplay.textContent = 'Logged In';
                     
                     await loadPrivacyLevels();
                 } else if (data.status === 'no_token') {
-                    authStatus.textContent = '❌ 未授权';
+                    authStatus.textContent = '❌ Not Authorized';
                     authStatus.className = 'value error';
                     tokenExpiry.textContent = '-';
                     loginCard.style.display = 'block';
@@ -290,12 +291,12 @@
                 }
                 
                 document.getElementById('statusAlert').className = 'alert alert-info';
-                document.getElementById('statusAlert').textContent = `用户ID: ${data.user_id || '-'}`;
+                document.getElementById('statusAlert').textContent = `User ID: ${data.user_id || '-'}`;
                 document.getElementById('statusAlert').style.display = 'block';
                 
                 loadHistory();
             } catch (error) {
-                showAlert('status', 'error', '状态检查失败: ' + error.message);
+                showAlert('status', 'error', 'Failed to check status: ' + error.message);
             }
         }
 
@@ -327,7 +328,7 @@
                     
                     if (privacyLevels.length > 0) {
                         document.getElementById('uploadAlert').className = 'alert alert-info';
-                        document.getElementById('uploadAlert').textContent = `已获取到 ${privacyLevels.length} 个可用隐私级别: ${privacyLevels.join(', ')}`;
+                        document.getElementById('uploadAlert').textContent = `Loaded ${privacyLevels.length} privacy levels: ${privacyLevels.join(', ')}`;
                         document.getElementById('uploadAlert').style.display = 'block';
                         setTimeout(() => {
                             document.getElementById('uploadAlert').style.display = 'none';
@@ -335,25 +336,7 @@
                     }
                 }
             } catch (error) {
-                console.log('获取隐私级别失败:', error);
-            }
-        }
-
-        async function getAuthUrl() {
-            try {
-                const response = await fetch(`${API_BASE}/auth/url`, { headers: getHeaders() });
-                const data = await response.json();
-                
-                if (data.auth_url) {
-                    showAlert('status', 'info', '授权链接已生成，点击按钮打开授权页面');
-                    setTimeout(() => {
-                        window.open(data.auth_url, '_blank');
-                    }, 1000);
-                } else {
-                    showAlert('status', 'error', '获取授权链接失败');
-                }
-            } catch (error) {
-                showAlert('status', 'error', '获取授权链接失败: ' + error.message);
+                console.log('Failed to load privacy levels:', error);
             }
         }
 
@@ -362,14 +345,14 @@
             
             const videoFile = document.getElementById('videoFile').files[0];
             if (!videoFile) {
-                showAlert('upload', 'error', '请选择视频文件');
+                showAlert('upload', 'error', 'Please select a video file');
                 return;
             }
 
             isUploading = true;
             const btn = document.getElementById('uploadBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>上传中...';
+            btn.innerHTML = '<span class="loading"></span>Uploading...';
             
             document.getElementById('uploadProgress').style.display = 'block';
             document.getElementById('progressBar').style.width = '0%';
@@ -397,21 +380,21 @@
                 xhr.onload = () => {
                     isUploading = false;
                     btn.disabled = false;
-                    btn.textContent = '📥 上传到收件箱';
+                    btn.textContent = '📥 Upload to Inbox';
                     
                     try {
                         const response = JSON.parse(xhr.responseText);
                         if (xhr.status === 200 && response.success) {
-                            showAlert('upload', 'success', `上传成功！Publish ID: ${response.publish_id}`);
+                            showAlert('upload', 'success', `Upload successful! Publish ID: ${response.publish_id}`);
                             document.getElementById('videoFile').value = '';
                             document.getElementById('videoTitle').value = '';
                             document.getElementById('videoDesc').value = '';
                             loadHistory();
                         } else {
-                            showAlert('upload', 'error', '上传失败: ' + (response.error || '未知错误'));
+                            showAlert('upload', 'error', 'Upload failed: ' + (response.error || 'Unknown error'));
                         }
                     } catch (e) {
-                        showAlert('upload', 'error', '上传失败: 服务器响应解析错误');
+                        showAlert('upload', 'error', 'Upload failed: Failed to parse response');
                     }
                     
                     setTimeout(() => {
@@ -422,16 +405,16 @@
                 xhr.onerror = () => {
                     isUploading = false;
                     btn.disabled = false;
-                    btn.textContent = '📥 上传到收件箱';
-                    showAlert('upload', 'error', '上传失败: 网络错误');
+                    btn.textContent = '📥 Upload to Inbox';
+                    showAlert('upload', 'error', 'Upload failed: Network error');
                 };
 
                 xhr.send(formData);
             } catch (error) {
                 isUploading = false;
                 btn.disabled = false;
-                btn.textContent = '📥 上传到收件箱';
-                showAlert('upload', 'error', '上传失败: ' + error.message);
+                btn.textContent = '📥 Upload to Inbox';
+                showAlert('upload', 'error', 'Upload failed: ' + error.message);
             }
         }
 
@@ -439,7 +422,7 @@
             isUploading = false;
             const btn = document.getElementById('publishBtn');
             btn.disabled = false;
-            btn.textContent = '🚀 直接发布';
+            btn.textContent = '🚀 Direct Publish';
             document.getElementById('uploadProgress').style.display = 'none';
         }
 
@@ -448,14 +431,14 @@
             
             const videoFile = document.getElementById('videoFile').files[0];
             if (!videoFile) {
-                showAlert('upload', 'error', '请选择视频文件');
+                showAlert('upload', 'error', 'Please select a video file');
                 return;
             }
 
             isUploading = true;
             const btn = document.getElementById('publishBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span>发布中...';
+            btn.innerHTML = '<span class="loading"></span>Publishing...';
             
             document.getElementById('uploadProgress').style.display = 'block';
             document.getElementById('progressBar').style.width = '0%';
@@ -486,40 +469,40 @@
                     try {
                         const response = JSON.parse(xhr.responseText);
                         if (xhr.status === 200 && response.success) {
-                            showAlert('upload', 'success', `发布成功！Publish ID: ${response.publish_id}`);
+                            showAlert('upload', 'success', `Publish successful! Publish ID: ${response.publish_id}`);
                             document.getElementById('videoFile').value = '';
                             document.getElementById('videoTitle').value = '';
                             document.getElementById('videoDesc').value = '';
                             loadHistory();
                         } else {
                             const errorMsg = response && response.error ? response.error : `HTTP ${xhr.status}`;
-                            showAlert('upload', 'error', '发布失败: ' + errorMsg);
+                            showAlert('upload', 'error', 'Publish failed: ' + errorMsg);
                         }
                     } catch (e) {
-                        showAlert('upload', 'error', '发布失败: 服务器响应解析错误');
+                        showAlert('upload', 'error', 'Publish failed: Failed to parse response');
                     } finally {
                         resetPublishButton();
                     }
                 };
 
                 xhr.onerror = () => {
-                    showAlert('upload', 'error', '发布失败: 网络错误');
+                    showAlert('upload', 'error', 'Publish failed: Network error');
                     resetPublishButton();
                 };
 
                 xhr.ontimeout = () => {
-                    showAlert('upload', 'error', '发布失败: 请求超时');
+                    showAlert('upload', 'error', 'Publish failed: Timeout');
                     resetPublishButton();
                 };
 
                 xhr.onabort = () => {
-                    showAlert('upload', 'error', '发布失败: 请求被取消');
+                    showAlert('upload', 'error', 'Publish failed: Cancelled');
                     resetPublishButton();
                 };
 
                 xhr.send(formData);
             } catch (error) {
-                showAlert('upload', 'error', '发布失败: ' + error.message);
+                showAlert('upload', 'error', 'Publish failed: ' + error.message);
                 resetPublishButton();
             }
         }
@@ -536,24 +519,24 @@
                     list.innerHTML = data.records.map(r => `
                         <div class="history-item">
                             <div class="info">
-                                <div class="name">${r.video_path || '未知文件'}</div>
+                                <div class="name">${r.video_path || 'Unknown'}</div>
                                 <div class="meta">
                                     Publish ID: ${r.publish_id || '-'} | 
-                                    时间: ${new Date(r.created_at).toLocaleString('zh-CN')}
+                                    Time: ${new Date(r.created_at).toLocaleString('zh-CN')}
                                 </div>
                             </div>
-                            <span class="status-badge status-${r.status}">${r.status === 'uploaded' ? '已上传' : r.status === 'published' ? '已发布' : r.status}</span>
+                            <span class="status-badge status-${r.status}">${r.status === 'uploaded' ? 'Uploaded' : r.status === 'published' ? 'Published' : r.status}</span>
                         </div>
                     `).join('');
                     
                     const pending = data.records.filter(r => r.status === 'uploaded').length;
                     pendingCount.textContent = pending;
                 } else {
-                    list.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">暂无上传记录</p>';
+                    list.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No upload records</p>';
                     pendingCount.textContent = '0';
                 }
             } catch (error) {
-                console.error('加载历史失败:', error);
+                console.error('Failed to load history:', error);
             }
         }
 
@@ -573,11 +556,9 @@
         window.onload = () => {
             checkStatus();
             
-            // 检查 URL 是否有授权成功的参数（可选改进）
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('auth_success') === 'true') {
-                showAlert('status', 'success', 'TikTok 授权成功！');
-                // 清理 URL
+                showAlert('status', 'success', 'TikTok authorization successful!');
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         };

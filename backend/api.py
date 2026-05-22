@@ -34,14 +34,15 @@ def add_cors_headers(response):
         'https://bebcare.com', 
         'http://localhost:8000',
         'https://c530-183-53-254-179.ngrok-free.app',
-        'http://localhost:5000'
+        'http://localhost:5000',
+        'https://your-vercel-project.vercel.app'
     ]
     origin = request.headers.get('Origin')
     if origin and origin in allowed_origins:
         response.headers['Access-Control-Allow-Origin'] = origin
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key'
-    elif origin and 'localhost' in origin:
+    elif origin and ('localhost' in origin or '.vercel.app' in origin):
         response.headers['Access-Control-Allow-Origin'] = origin
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key'

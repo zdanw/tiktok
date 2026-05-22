@@ -7,7 +7,7 @@ A web-based TikTok video publishing system that allows users to upload and publi
 - **TikTok OAuth 2.0 Authentication**: Secure login with TikTok accounts
 - **Video Upload**: Upload videos to TikTok inbox
 - **Direct Publish**: Publish videos directly to TikTok
-- **Privacy Settings**: Support multiple privacy levels (Public, Followers Only, Mutual Follow Friends, Self Only, Private)
+- **Privacy Settings**: Support multiple privacy levels
 - **Upload History**: Track video upload and publish history
 - **System Status**: Monitor authorization status and token expiration
 - **Logout Functionality**: Secure logout with token cleanup
@@ -19,18 +19,29 @@ A web-based TikTok video publishing system that allows users to upload and publi
 - **Frontend**: HTML5, CSS3, JavaScript
 - **API**: TikTok Content Posting API
 
-## Requirements
+## Project Structure
 
-- Python 3.8+
-- TikTok Developer Account
-- TikTok App with Content Posting API enabled
+```
+.
+├── backend/                    # Backend API
+│   ├── api.py                 # Flask main application
+│   ├── config.py              # Configuration file
+│   └── tiktok_callback.html   # OAuth callback page
+├── frontend/                   # Frontend web interface
+│   └── web_admin.html         # Main admin interface
+├── requirements.txt            # Python dependencies
+├── pyproject.toml             # Vercel/Python configuration
+├── .gitignore                 # Git ignore rules
+└── README.md                  # Project documentation
+```
 
 ## Installation
 
-1. **Clone the repository**
+### Backend (Deployed on Railway)
+
+1. **Navigate to backend directory**
    ```bash
-   git clone <repository-url>
-   cd tiktok-video-publishing
+   cd backend
    ```
 
 2. **Create virtual environment**
@@ -52,45 +63,65 @@ A web-based TikTok video publishing system that allows users to upload and publi
    pip install -r requirements.txt
    ```
 
-5. **Configure environment variables**
-   
-   Create a `.env` file with the following content:
-   ```ini
-   # TikTok API Configuration
-   TIKTOK_CLIENT_KEY=your_client_key
-   TIKTOK_CLIENT_SECRET=your_client_secret
-   TIKTOK_REDIRECT_URI=https://your-domain.com/callback
+### Frontend (Deployed on Vercel)
 
-   # Authorization success redirect URL
-   AUTH_SUCCESS_REDIRECT_URL=http://localhost:8000
+The frontend is a static HTML file that can be deployed directly on Vercel.
 
-   # Server Configuration
-   PORT=8000
+## Deployment Guide
 
-   # TikTok API Endpoints
-   TIKTOK_AUTH_URL=https://www.tiktok.com/v2/auth/authorize/
-   TIKTOK_TOKEN_URL=https://open.tiktokapis.com/v2/oauth/token/
-   TIKTOK_API_BASE_URL=https://open.tiktokapis.com/v2/
+### 🔹 Backend - Deploy to Railway
 
-   # Internal API Key
-   INTERNAL_API_KEY=your_internal_api_key
+1. **Create Railway Project**
+   - Go to [Railway.app](https://railway.app/)
+   - Create new project from GitHub repo
+   - Select your repository
+
+2. **Set Environment Variables**
+   | Variable | Value |
+   |----------|-------|
+   | `TIKTOK_CLIENT_KEY` | Your TikTok Client Key |
+   | `TIKTOK_CLIENT_SECRET` | Your TikTok Client Secret |
+   | `TIKTOK_REDIRECT_URI` | `https://your-railway-domain.up.railway.app/callback` |
+   | `AUTH_SUCCESS_REDIRECT_URL` | `https://your-vercel-domain.vercel.app` |
+   | `PORT` | `8000` |
+   | `INTERNAL_API_KEY` | Your secret key |
+   | `SECRET_KEY` | Flask secret key |
+
+3. **Set Start Command**
+   ```bash
+   gunicorn api:app
    ```
 
-## Usage
+### 🔹 Frontend - Deploy to Vercel
 
-### Run Development Server
+1. **Create Vercel Project**
+   - Go to [Vercel.com](https://vercel.com/)
+   - Add new project from GitHub repo
+   - Select your repository
 
-```bash
-python api.py
-```
+2. **Configure Build Settings**
+   - Framework: `Other`
+   - Build Command: Leave empty
+   - Output Directory: Leave empty
 
-The application will be available at `http://localhost:8000`
+3. **Update API Base URL**
+   - Edit `frontend/web_admin.html`
+   - Update `API_BASE` to your Railway backend URL:
+   ```javascript
+   const API_BASE = 'https://your-railway-domain.up.railway.app/tiktok';
+   ```
 
-### API Endpoints
+### 🔹 TikTok Developer Platform Configuration
+
+1. Add callback URL: `https://your-railway-domain.up.railway.app/callback`
+2. Ensure Content Posting API is enabled
+3. Verify all required scopes are added
+
+## API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/` | GET | Home page with web interface |
+| `/` | GET | Backend health check |
 | `/callback` | GET | TikTok OAuth callback page |
 | `/tiktok/auth/url` | GET | Get authorization URL |
 | `/tiktok/auth/callback` | GET | OAuth callback handler |
@@ -101,32 +132,10 @@ The application will be available at `http://localhost:8000`
 | `/tiktok/history` | GET | Get upload history |
 | `/tiktok/health` | GET | Health check |
 
-## TikTok Developer Setup
-
-1. Go to [TikTok Developer Portal](https://developers.tiktok.com/)
-2. Create a new app
-3. Enable Content Posting API
-4. Add your redirect URI in the app settings
-5. Get your Client Key and Client Secret
-
-## Project Structure
-
-```
-.
-├── api.py              # Main Flask application
-├── config.py           # Configuration file
-├── requirements.txt    # Python dependencies
-├── web_admin.html      # Web admin interface
-├── tiktok_callback.html # OAuth callback page
-├── .env                # Environment variables (not in repo)
-├── .gitignore          # Git ignore rules
-└── README.md           # Project documentation
-```
-
 ## Security Notes
 
-- The application is designed for internal use only
-- Access is restricted by IP whitelisting and API key authentication
+- CORS is configured to allow Vercel frontend access
+- Access is restricted by API key authentication
 - All API requests require an X-API-Key header
 - Token data is stored securely in SQLite database
 - HTTPS is required for production deployment
