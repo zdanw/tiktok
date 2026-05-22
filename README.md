@@ -134,11 +134,10 @@ The frontend is a static HTML file that can be deployed directly on Vercel.
 
 ## Security Notes
 
-- CORS is configured to allow Vercel frontend access
-- Access is restricted by API key authentication
-- All API requests require an X-API-Key header
+- CORS is configured to allow all origins for public access
 - Token data is stored securely in SQLite database
 - HTTPS is required for production deployment
+- Users authenticate via TikTok OAuth 2.0
 
 ## License
 

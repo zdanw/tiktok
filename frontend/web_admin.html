@@ -207,12 +207,10 @@
     <script>
         // 配置后端 API 地址 - 在部署时修改为您的 Railway 后端地址
         const API_BASE = 'https://your-railway-backend.up.railway.app/tiktok';
-        const API_KEY = 'bebcare_internal_key_2026';
         let isUploading = false;
 
         function getHeaders() {
             return {
-                'X-API-Key': API_KEY,
                 'Accept': 'application/json'
             };
         }

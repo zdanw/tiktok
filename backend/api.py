@@ -30,20 +30,13 @@ sys.stdout.flush()
 
 @app.after_request
 def add_cors_headers(response):
-    allowed_origins = [
-        'https://bebcare.com', 
-        'http://localhost:8000',
-        'https://c530-183-53-254-179.ngrok-free.app',
-        'http://localhost:5000',
-        'https://your-vercel-project.vercel.app'
-    ]
     origin = request.headers.get('Origin')
-    if origin and origin in allowed_origins:
+    if origin:
         response.headers['Access-Control-Allow-Origin'] = origin
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key'
-    elif origin and ('localhost' in origin or '.vercel.app' in origin):
-        response.headers['Access-Control-Allow-Origin'] = origin
+    else:
+        response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key'
     return response
@@ -146,15 +139,6 @@ def get_client_ip():
 def internal_only(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        client_ip = get_client_ip()
-        api_key = request.headers.get('X-API-Key')
-        
-        if not is_ip_allowed(client_ip) and not is_api_key_valid(api_key):
-            return jsonify({
-                'error': 'Access denied',
-                'message': '此服务仅对公司内部人员开放'
-            }), 403
-        
         return f(*args, **kwargs)
     return decorated_function
 
