@@ -1,6 +1,15 @@
 [tool.vercel]
 entrypoint = "api:app"
 
+[project]
+name = "tiktok-video-publishing"
+version = "1.0.0"
+description = "TikTok Video Publishing System"
+requires-python = ">=3.8"
+
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["."]
