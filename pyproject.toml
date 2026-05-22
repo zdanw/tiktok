@@ -1,0 +1,6 @@
+[tool.vercel]
+entrypoint = "api:app"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
