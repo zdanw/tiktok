@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok 授权回调</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .success {
+            color: #10b981;
+        }
+        
+        .error {
+            color: #ef4444;
+        }
+        
+        .info {
+            background: #f3f4f6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .info-item {
+            margin: 10px 0;
+            color: #666;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .code-box {
+            background: #1f2937;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-top: 10px;
+            user-select: all;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="icon">⏳</div>
+        <h1>正在处理授权...</h1>
+        <p>请稍候</p>
+        <div class="loading"></div>
+    </div>
+
+    <script>
+        // 从 URL 中获取参数
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
+        // 获取 code 和 state 参数
+        const code = getUrlParameter('code');
+        const state = getUrlParameter('state');
+        const error = getUrlParameter('error');
+        const errorDescription = getUrlParameter('error_description');
+        const redirect = getUrlParameter('redirect');
+        const userId = getUrlParameter('user_id');
+        
+        const container = document.getElementById('container');
+        const apiBase = window.location.origin;
+        
+        // 如果有错误
+        if (error) {
+            container.innerHTML = `
+                <div class="icon">❌</div>
+                <h1 class="error">授权失败</h1>
+                <div class="info">
+                    <div class="info-item">
+                        <span class="info-label">错误代码：</span>${error}
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">错误原因：</span>${errorDescription || '未知错误'}
+                    </div>
+                </div>
+                <a href="/" class="btn">返回首页</a>
+            `;
+        }
+        // 如果有 code
+        else if (code) {
+            // 显示正在处理
+            container.innerHTML = `
+                <div class="icon">🔄</div>
+                <h1>正在完成授权...</h1>
+                <p>正在将授权信息发送到服务器</p>
+                <div class="loading"></div>
+            `;
+            
+            // 构建回调 URL
+            let callbackUrl = `${apiBase}/tiktok/auth/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || '')}`;
+            if (userId) {
+                callbackUrl += `&user_id=${encodeURIComponent(userId)}`;
+            }
+            if (redirect === 'true') {
+                callbackUrl += `&redirect=true`;
+            }
+            
+            // 自动将 code 发送到 API 服务
+            fetch(callbackUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                redirect: 'follow'
+            })
+            .then(response => {
+                // 检查是否是重定向响应
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return null;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data === null) {
+                    return; // 重定向已处理
+                }
+                
+                if (data.success) {
+                    // 如果需要重定向，使用返回的重定向地址或默认地址
+                    if (redirect === 'true') {
+                        const redirectUrl = data.redirect_url || '/?auth_success=true';
+                        window.location.href = redirectUrl;
+                        return;
+                    }
+                    
+                    container.innerHTML = `
+                        <div class="icon">✅</div>
+                        <h1 class="success">授权完成！</h1>
+                        <p>您的 TikTok 账号已成功授权</p>
+                        <div class="info">
+                            <div class="info-item">
+                                <span class="info-label">用户ID：</span>${data.user_id || 'bebcare_internal'}
+                            </div>
+                        </div>
+                        <p style="color: #666; font-size: 14px; margin-top: 15px;">
+                            授权已完成，现在可以关闭此页面
+                        </p>
+                        <a href="/" class="btn">返回首页</a>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="icon">⚠️</div>
+                        <h1>自动授权失败</h1>
+                        <p>请重试或联系管理员</p>
+                        <div class="info">
+                            <div class="info-item">
+                                <span class="info-label">错误原因：</span>${data.error || '未知错误'}
+                            </div>
+                        </div>
+                        <a href="/" class="btn">返回首页</a>
+                    `;
+                }
+            })
+            .catch(err => {
+                console.error('发送失败:', err);
+                container.innerHTML = `
+                    <div class="icon">⚠️</div>
+                    <h1>网络连接失败</h1>
+                    <p>请重试</p>
+                    <div class="info">
+                        <p style="color: #666;">请检查网络连接后重试</p>
+                    </div>
+                    <a href="/" class="btn">返回首页</a>
+                `;
+            });
+        }
+        // 没有参数
+        else {
+            container.innerHTML = `
+                <div class="icon">ℹ️</div>
+                <h1>无效的回调</h1>
+                <p>未检测到授权信息</p>
+                <div class="info">
+                    <p style="color: #666;">请从首页重新登录</p>
+                </div>
+                <a href="/" class="btn">返回首页</a>
+            `;
+        }
+    </script>
+</body>
+</html>
