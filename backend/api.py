@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Flask, request, redirect, jsonify, send_file
+from flask import Flask, request, redirect, jsonify, send_file, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 import requests
@@ -28,17 +28,42 @@ logging.getLogger('werkzeug').setLevel(logging.INFO)
 import sys
 sys.stdout.flush()
 
+ALLOWED_ORIGINS = [
+    'https://tiktok-iota-five.vercel.app',
+    'http://localhost:8000',
+    'http://localhost:5000'
+]
+
+@app.before_request
+def handle_options():
+    if request.method == 'OPTIONS':
+        response = make_response()
+        origin = request.headers.get('Origin')
+        if origin and (origin in ALLOWED_ORIGINS or 'localhost' in origin):
+            response.headers['Access-Control-Allow-Origin'] = origin
+        else:
+            response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key, Authorization'
+        response.headers['Access-Control-Max-Age'] = '86400'
+        return response
+
 @app.after_request
 def add_cors_headers(response):
     origin = request.headers.get('Origin')
     if origin:
-        response.headers['Access-Control-Allow-Origin'] = origin
+        if origin in ALLOWED_ORIGINS or 'localhost' in origin:
+            response.headers['Access-Control-Allow-Origin'] = origin
+        else:
+            response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key, Authorization'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
     else:
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-API-Key, Authorization'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
