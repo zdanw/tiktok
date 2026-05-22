@@ -89,7 +89,7 @@ The frontend is a static HTML file that can be deployed directly on Vercel.
 
 3. **Set Start Command**
    ```bash
-   gunicorn api:app
+   gunicorn backend.api:app
    ```
 
 ### 🔹 Frontend - Deploy to Vercel

@@ -78,7 +78,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'bebcare-secret-key-2026
 
 db = SQLAlchemy(app)
 
-from config import (
+from .config import (
     TIKTOK_CLIENT_KEY,
     TIKTOK_CLIENT_SECRET,
     TIKTOK_REDIRECT_URI,
