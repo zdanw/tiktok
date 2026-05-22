@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "frontend/web_admin.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/web_admin.html"
+    }
+  ]
+}
