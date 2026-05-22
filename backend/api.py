@@ -96,9 +96,6 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'bebcare-secret-key-2026
 
 db = SQLAlchemy(app)
 
-with app.app_context():
-    db.create_all()
-
 from .config import (
     TIKTOK_CLIENT_KEY,
     TIKTOK_CLIENT_SECRET,
@@ -138,6 +135,9 @@ class UploadHistory(db.Model):
     publish_id = db.Column(db.String(128))
     status = db.Column(db.String(32))
     created_at = db.Column(db.DateTime, default=datetime.now)
+
+with app.app_context():
+    db.create_all()
 
 def is_ip_allowed(ip):
     if ip in ['127.0.0.1', '::1']:
