@@ -315,25 +315,18 @@ def auth_callback():
             
             db.session.commit()
             
-            # 使用配置的重定向地址
+            # 始终重定向到配置的前端地址
             redirect_url = AUTH_SUCCESS_REDIRECT_URL
             if not redirect_url.startswith('http'):
                 redirect_url = request.host_url.rstrip('/') + redirect_url
             
-            # 检查是否需要重定向（用于网页授权流程）
-            redirect_to_home = request.args.get('redirect', 'false').lower() == 'true'
-            if redirect_to_home:
-                redirect_url_with_param = redirect_url
-                if not redirect_url_with_param.startswith('http') or redirect_url_with_param.startswith(request.host_url):
-                    redirect_url_with_param += '?auth_success=true'
-                return redirect(redirect_url_with_param)
+            # 添加授权成功参数
+            if '?' in redirect_url:
+                redirect_url += '&auth_success=true'
+            else:
+                redirect_url += '?auth_success=true'
             
-            return jsonify({
-                'success': True,
-                'message': 'Authorization successful',
-                'user_id': user_id,
-                'redirect_url': redirect_url + '?auth_success=true'
-            })
+            return redirect(redirect_url)
         else:
             return jsonify({'error': token_response.text}), token_response.status_code
     except Exception as e:
