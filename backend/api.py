@@ -29,7 +29,7 @@ import sys
 sys.stdout.flush()
 
 ALLOWED_ORIGINS = [
-    'https://tiktok-iota-five.vercel.app',
+    'https://tiktokcallback.bebcare.com',
     'http://localhost:8000',
     'http://localhost:5000'
 ]
