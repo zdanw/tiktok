@@ -24,7 +24,7 @@ TIKTOK_CLIENT_SECRET = os.environ.get('TIKTOK_CLIENT_SECRET', '0ov7gg7gF3krD3Omv
 # ==================== TikTok OAuth配置 ====================
 TIKTOK_REDIRECT_URI = os.environ.get(
     'TIKTOK_REDIRECT_URI',
-    'https://bebcare.com/pages/callback'
+    'https://tiktokapi.bebcare.com/tiktok/auth/callback'
 )
 
 TIKTOK_AUTH_URL = os.environ.get('TIKTOK_AUTH_URL', "https://www.tiktok.com/v2/auth/authorize/")

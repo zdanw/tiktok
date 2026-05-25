@@ -327,12 +327,8 @@ def auth_callback():
             else:
                 redirect_url += '?auth_success=true'
             
-            # 返回 JSON 响应，让前端处理重定向（避免跨域问题）
-            return jsonify({
-                'success': True,
-                'user_id': user_id,
-                'redirect_url': redirect_url
-            })
+            # 直接重定向到前端（TikTok 回调到后端是同域名，没问题）
+            return redirect(redirect_url)
         else:
             return jsonify({'error': token_response.text}), token_response.status_code
     except Exception as e:
