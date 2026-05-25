@@ -135,7 +135,8 @@
         const userId = getUrlParameter('user_id');
         
         const container = document.getElementById('container');
-        const apiBase = window.location.origin;
+        // 后端 API 地址 - Railway 后端
+        const apiBase = 'https://tiktok-production-f253.up.railway.app';
         
         // 如果有错误
         if (error) {

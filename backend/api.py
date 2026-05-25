@@ -29,6 +29,7 @@ import sys
 sys.stdout.flush()
 
 ALLOWED_ORIGINS = [
+    'https://bebcare.com',
     'https://tiktokcallback.bebcare.com',
     'http://localhost:8000',
     'http://localhost:5000'
