@@ -316,7 +316,7 @@ def auth_callback():
             
             db.session.commit()
             
-            # 始终重定向到配置的前端地址
+            # 构建重定向 URL
             redirect_url = AUTH_SUCCESS_REDIRECT_URL
             if not redirect_url.startswith('http'):
                 redirect_url = request.host_url.rstrip('/') + redirect_url
@@ -327,7 +327,12 @@ def auth_callback():
             else:
                 redirect_url += '?auth_success=true'
             
-            return redirect(redirect_url)
+            # 返回 JSON 响应，让前端处理重定向（避免跨域问题）
+            return jsonify({
+                'success': True,
+                'user_id': user_id,
+                'redirect_url': redirect_url
+            })
         else:
             return jsonify({'error': token_response.text}), token_response.status_code
     except Exception as e:

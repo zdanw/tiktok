@@ -179,43 +179,18 @@
                 headers: {
                     'Accept': 'application/json'
                 },
-                redirect: 'follow'
+                redirect: 'follow',
+                mode: 'cors',
+                credentials: 'include'
             })
             .then(response => {
-                // 检查是否是重定向响应
-                if (response.redirected) {
-                    window.location.href = response.url;
-                    return null;
-                }
                 return response.json();
             })
             .then(data => {
-                if (data === null) {
-                    return; // 重定向已处理
-                }
-                
                 if (data.success) {
-                    // 如果需要重定向，使用返回的重定向地址或默认地址
-                    if (redirect === 'true') {
-                        const redirectUrl = data.redirect_url || '/?auth_success=true';
-                        window.location.href = redirectUrl;
-                        return;
-                    }
-                    
-                    container.innerHTML = `
-                        <div class="icon">✅</div>
-                        <h1 class="success">授权完成！</h1>
-                        <p>您的 TikTok 账号已成功授权</p>
-                        <div class="info">
-                            <div class="info-item">
-                                <span class="info-label">用户ID：</span>${data.user_id || 'bebcare_internal'}
-                            </div>
-                        </div>
-                        <p style="color: #666; font-size: 14px; margin-top: 15px;">
-                            授权已完成，现在可以关闭此页面
-                        </p>
-                        <a href="/" class="btn">返回首页</a>
-                    `;
+                    // 授权成功，重定向到配置的前端地址
+                    const redirectUrl = data.redirect_url || 'https://tiktokcallback.bebcare.com?auth_success=true';
+                    window.location.href = redirectUrl;
                 } else {
                     container.innerHTML = `
                         <div class="icon">⚠️</div>
