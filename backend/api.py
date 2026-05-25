@@ -29,7 +29,6 @@ import sys
 sys.stdout.flush()
 
 ALLOWED_ORIGINS = [
-    'https://bebcare.com',
     'https://tiktokcallback.bebcare.com',
     'http://localhost:8000',
     'http://localhost:5000'
@@ -316,7 +315,7 @@ def auth_callback():
             
             db.session.commit()
             
-            # 构建重定向 URL
+            # 始终重定向到配置的前端地址
             redirect_url = AUTH_SUCCESS_REDIRECT_URL
             if not redirect_url.startswith('http'):
                 redirect_url = request.host_url.rstrip('/') + redirect_url
@@ -327,7 +326,6 @@ def auth_callback():
             else:
                 redirect_url += '?auth_success=true'
             
-            # 直接重定向到前端（TikTok 回调到后端是同域名，没问题）
             return redirect(redirect_url)
         else:
             return jsonify({'error': token_response.text}), token_response.status_code
